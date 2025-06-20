@@ -1,8 +1,8 @@
 name: immortalwrt in docker
 
 on:
-#  schedule:
-#    - cron: 0 15 * * *
+  schedule:
+    - cron: 0 15 * * *
   workflow_dispatch:
     inputs:
       model:
@@ -24,9 +24,8 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  DOCKER_REPO: ldxw/immortalwrt  # 替换为你的Docker仓库
-  DOCKER_TAG: amd64
-  GHCR_REPO: ghcr.io/${{ github.repository_owner }}/immortalwrt  # GitHub Container Registry 仓库
+  DOCKER_REPO: jessekool/immortalwrt_multiple_ethports  # 替换为你的Docker仓库
+  DOCKER_TAG: latest
 
 jobs:
   Build:
@@ -121,13 +120,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-          
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         run: |
@@ -136,12 +128,6 @@ jobs:
           docker push ${{ env.DOCKER_REPO }}:${{ env.BUILD_DATE }}
           docker tag ${{ env.DOCKER_REPO }}:${{ env.BUILD_DATE }} ${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
           docker push ${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
-          
-          # 构建并推送到 GitHub Container Registry
-          docker build -t ${{ env.GHCR_REPO }}:${{ env.BUILD_DATE }} .
-          docker push ${{ env.GHCR_REPO }}:${{ env.BUILD_DATE }}
-          docker tag ${{ env.GHCR_REPO }}:${{ env.BUILD_DATE }} ${{ env.GHCR_REPO }}:${{ env.DOCKER_TAG }}
-          docker push ${{ env.GHCR_REPO }}:${{ env.DOCKER_TAG }}
 
       - name: Get Kernel Verion
         run: |
