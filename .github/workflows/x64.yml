@@ -12,6 +12,11 @@ on:
         default: x86-64
         options:
           - x86-64
+      docker-tag:
+        required: false
+        description: Docker image tag (default: amd64)
+        type: string
+        default: amd64
       runs-on:
         required: true
         description: Runs on...
@@ -25,7 +30,7 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   DOCKER_REPO: ldxw/immortalwrt  # 替换为你的Docker仓库
-  DOCKER_TAG: amd64
+  DOCKER_TAG: ${{ github.event.inputs.docker-tag || 'amd64' }}
   GHCR_REPO: ghcr.io/${{ github.repository_owner }}/immortalwrt  # GitHub Container Registry 仓库
 
 jobs:
